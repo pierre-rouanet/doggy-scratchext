@@ -1,5 +1,6 @@
 (function (ext) {
-    let wsHost = '127.0.0.1';
+    // let wsHost = '127.0.0.1';
+    let wsHost = '192.168.0.26';
     let wsPort = 9009;
 
     let ws = null;
@@ -70,7 +71,7 @@
     ext.setMotorPos = function(motor, position) {
         var cmd = {
             [motor]: {
-                goal_position: position
+                'target position': position
             }
         };
 
@@ -171,6 +172,7 @@
             ['b', 'felt', 'felt'],
             ['r', 'imu acc %m.acc', 'getImuAcc', 'x'],
             ['r', 'distance to %m.distanceSensors', 'getDistance', 'front'],
+            ['-----'],
 
             // Hat
             ['h', 'when doggy falls', 'whenFall'],
