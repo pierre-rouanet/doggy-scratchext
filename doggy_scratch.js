@@ -3,7 +3,7 @@
     let wsPort = 9009;
 
     let ws = null;
-    let robotState = null;
+    let robotState = {};
 
     let heartbeatTimestamp = null;
     let heartbeatTimeout = 1000; // in ms
@@ -52,7 +52,7 @@
     ext._getStatus = function() {
         let date = new Date();
         let t = date.getTime();
-        
+
         let alive = (t - heartbeatTimestamp) < heartbeatTimeout;
 
         if (ws == null || ws.readyState === ws.CLOSED) {
@@ -169,13 +169,7 @@
         blocks: [
             // Block type, block name, function name
 
-            // Debug
-            [' ', 'log current state', 'debugLog'],
-            [' ', 'connect to host %s', 'connectToHost'],
-
             // Motion commands
-            [' ', 'set %m.motors position to %n', 'setMotorPos', 'm1', 0],
-
             ['w', 'move %n cm in %n sec', 'moveForward', 10, 1],
             [' ', 'turn %n degrees', 'turn', 90],
             [' ', 'stop', 'stop'],
@@ -184,19 +178,26 @@
             ['b', 'felt', 'felt'],
             ['r', 'imu acc %m.acc', 'getImuAcc', 'x'],
             ['r', 'distance to %m.distanceSensors', 'getDistance', 'front'],
-            ['-----'],
 
             // Hat
             ['h', 'when doggy falls', 'whenFall'],
             ['h', 'when tilt %m.lessMore %n', 'whenTilt', '<', 0],
             ['h', 'when %m.distanceSensors distance %m.lessMore %n', 'whenObstacle', 'front', '<', 0.75],
+
+            // Debug
+            ['---'],
+            [' ', 'set %m.motors position to %n', 'setMotorPos', 'm1', 0],
+            [' ', 'log current state', 'debugLog'],
+            [' ', 'connect to host %s', 'connectToHost'],
+
         ],
         menus: {
-            lessMore: ['<', '>'],
+            motors: ['m1', 'm2', 'm3', 'm4', 'm5', 'm6', 'm7', 'm8'],
 
             acc: ['x', 'y', 'z'],
-            motors: ['m1', 'm2', 'm3', 'm4', 'm5', 'm6', 'm7', 'm8'],
             distanceSensors: ['front', 'left', 'right'],
+
+            lessMore: ['<', '>'],
         },
         url: '',
     };
