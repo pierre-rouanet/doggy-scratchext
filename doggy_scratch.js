@@ -1,6 +1,5 @@
 (function (ext) {
-    // let wsHost = '127.0.0.1';
-    let wsHost = '192.168.0.26';
+    let wsHost = 'minidoggy.local';
     let wsPort = 9009;
 
     let ws = null;
