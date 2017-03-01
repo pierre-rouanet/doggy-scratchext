@@ -5,6 +5,9 @@
     let ws = null;
     let robotState = null;
 
+    let heartbeatTimestamp = null;
+    let heartbeatTimeout = 1000; // in ms
+
     const startSocket = function(url) {
       if (ws) {
         console.log(`Socket already opened.`);
@@ -25,6 +28,8 @@
         else {
             console.error('Binary data received not handled!');
         };
+        var date = new Date();
+        heartbeatTimestamp = date.getTime();
       }
 
       ws.onclose = function() {
@@ -45,6 +50,11 @@
     };
 
     ext._getStatus = function() {
+        let date = new Date();
+        let t = date.getTime();
+        
+        let alive = (t - heartbeatTimestamp) < heartbeatTimeout;
+
         if (ws == null || ws.readyState === ws.CLOSED) {
             let url = 'ws://' + wsHost + ':' + wsPort;
             ws = startSocket(url);
@@ -58,6 +68,9 @@
 
         } else if (ws.readyState === ws.CLOSING) {
             return { status: 1, msg: 'Disconnecting' };
+
+        } else if (!alive) {
+            return { status: 1, msg: 'Lost connection...' };
 
         } else if (ws.readyState === ws.OPEN) {
             return { status: 2, msg: 'Ready' };
