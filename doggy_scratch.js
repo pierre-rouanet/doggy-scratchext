@@ -80,6 +80,18 @@
 
     // Motion commands
 
+    ext.moveLeg = function(leg, x, y) {
+        leg = leg + ' leg';
+
+        var cmd = {
+            [leg]: {
+                x: x,
+                y: y,
+            }
+        };
+        ws.send(JSON.stringify(cmd));
+    };
+
     ext.setMotorPos = function(motor, position) {
         var cmd = {
             [motor]: {
@@ -170,6 +182,7 @@
             // Block type, block name, function name
 
             // Motion commands
+            [' ', 'move %m.legs to x: %n y: %n', 'moveLeg', 'front left', 0, 0],
             ['w', 'move %n cm in %n sec', 'moveForward', 10, 1],
             [' ', 'turn %n degrees', 'turn', 90],
             [' ', 'stop', 'stop'],
@@ -192,6 +205,7 @@
 
         ],
         menus: {
+            legs: ['front left', 'front right', 'rear left', 'rear right'],
             motors: ['m1', 'm2', 'm3', 'm4', 'm5', 'm6', 'm7', 'm8'],
 
             acc: ['x', 'y', 'z'],
