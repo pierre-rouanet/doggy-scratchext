@@ -124,15 +124,15 @@
     // Reporters
 
     ext.felt = function() {
-        return robotState['imu']['acc']['x'] > 0.95
+        return robotState.imu.acc.x > 0.95
     };
 
     ext.getImuAcc = function(axis) {
-        return robotState['imu']['acc'][axis];
+        return robotState.imu.acc.axis;
     };
 
     ext.getDistance = function(loc) {
-        return robotState['distance'][loc];
+        return robotState.distance[loc];
     }
 
     // Hat
