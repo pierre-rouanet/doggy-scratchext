@@ -1,12 +1,12 @@
 (function (ext) {
-    let wsHost = 'minidoggy.local';
-    let wsPort = 9009;
+    const wsHost = 'minidoggy.local';
+    const wsPort = 9009;
 
     let ws = null;
     let robotState = {};
 
     let heartbeatTimestamp = null;
-    let heartbeatTimeout = 1000; // in ms
+    const heartbeatTimeout = 1000; // in ms
 
     const startSocket = function(url) {
       if (ws) {
@@ -28,7 +28,7 @@
         else {
             console.error('Binary data received not handled!');
         };
-        var date = new Date();
+        const date = new Date();
         heartbeatTimestamp = date.getTime();
       }
 
@@ -50,13 +50,13 @@
     };
 
     ext._getStatus = function() {
-        let date = new Date();
-        let t = date.getTime();
+        const date = new Date();
+        const t = date.getTime();
 
-        let alive = (t - heartbeatTimestamp) < heartbeatTimeout;
+        const alive = (t - heartbeatTimestamp) < heartbeatTimeout;
 
         if (ws == null || ws.readyState === ws.CLOSED) {
-            let url = 'ws://' + wsHost + ':' + wsPort;
+            const url = 'ws://' + wsHost + ':' + wsPort;
             ws = startSocket(url);
 
             console.log('Connecting to ' + url);
@@ -83,7 +83,7 @@
     ext.moveLeg = function(leg, x, y) {
         leg = leg + ' leg';
 
-        var cmd = {
+        const cmd = {
             [leg]: {
                 x: x,
                 y: y,
@@ -93,7 +93,7 @@
     };
 
     ext.setMotorPos = function(motor, position) {
-        var cmd = {
+        const cmd = {
             [motor]: {
                 'target position': position
             }
@@ -142,7 +142,7 @@
     };
 
     ext.whenTilt = function(lessMore, tilt) {
-        let angle = ext.getImuAcc('y');
+        const angle = ext.getImuAcc('y');
 
         if (lessMore == '<') {
             return angle < tilt;
@@ -153,7 +153,7 @@
     }
 
     ext.whenObstacle = function(loc, lessMore, dist) {
-        let d = ext.getDistance(loc);
+        const d = ext.getDistance(loc);
 
         if (lessMore == '<') {
             return d < dist;
@@ -177,7 +177,7 @@
     }
 
     // Block and block menu descriptions
-    var descriptor = {
+    let descriptor = {
         blocks: [
             // Block type, block name, function name
 
