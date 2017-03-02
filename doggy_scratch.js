@@ -81,25 +81,29 @@
     // Motion commands
 
     ext.moveLeg = function(leg, x, y) {
-        leg = leg + ' leg';
+        leg = leg + '_leg';
 
         const cmd = {
             [leg]: {
                 x: x,
-                y: y,
+                y: y
             }
         };
-        ws.send(JSON.stringify(cmd));
+        ext.send(cmd);
     };
 
-    ext.setMotorPos = function(motor, position) {
+    ext.setMotorPos = function(motor, leg, position) {
+        leg = leg + '_leg';
+
         const cmd = {
-            [motor]: {
-                'target position': position
+            [leg]: {
+                [motor]: {
+                    target_position: position
+                }
             }
         };
 
-        ws.send(JSON.stringify(cmd));
+        ext.send(cmd);
     };
 
     ext.moveForward = function(length, duration, callback) {
@@ -165,6 +169,11 @@
 
     // Debug
 
+    ext.send = function(cmd) {
+        console.log(cmd);
+        ws.send(JSON.stringify(cmd));
+    }
+
     ext.connectToHost = function(host) {
         if (ws != null) {
             ws.close();
@@ -182,7 +191,7 @@
             // Block type, block name, function name
 
             // Motion commands
-            [' ', 'move %m.legs to x: %n y: %n', 'moveLeg', 'front left', 0, 0],
+            [' ', 'move %m.legs to x: %n y: %n', 'moveLeg', 'front_left', 0, 0],
             ['w', 'move %n cm in %n sec', 'moveForward', 10, 1],
             [' ', 'turn %n degrees', 'turn', 90],
             [' ', 'stop', 'stop'],
@@ -199,14 +208,15 @@
 
             // Debug
             ['---'],
-            [' ', 'set %m.motors position to %n', 'setMotorPos', 'm1', 0],
+            [' ', 'set %m.motors motor of the %m.legs  leg to position %n', 'setMotorPos', 'front', 'front_left', 0],
             [' ', 'log current state', 'debugLog'],
             [' ', 'connect to host %s', 'connectToHost'],
 
         ],
         menus: {
-            legs: ['front left', 'front right', 'rear left', 'rear right'],
-            motors: ['m1', 'm2', 'm3', 'm4', 'm5', 'm6', 'm7', 'm8'],
+            legs: ['front_left', 'front_right',
+                   'back_left', 'back_right'],
+            motors: ['front', 'back'],
 
             acc: ['x', 'y', 'z'],
             distanceSensors: ['front', 'left', 'right'],
