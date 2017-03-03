@@ -1,5 +1,5 @@
 (function (ext) {
-    const wsHost = 'minidoggy.local';
+    let wsHost = 'minidoggy.local';
     const wsPort = 9009;
 
     let ws = null;
