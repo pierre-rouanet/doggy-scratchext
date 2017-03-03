@@ -80,8 +80,27 @@
 
     // Motion commands
 
+
     ext.moveLeg = function(leg, x, y) {
+        // The params x, y are exepected to be in the range [-1, 1]
+        // They are mapped to the cartesian coordinates
+        // of the end effector of the leg (in mm)
+        // x € [15, 60]
+        // y € [-30, 30]
+
         leg = leg + '_leg';
+
+        // Make sure x, y belong to [-1, 1]
+        x = (x <= -1) ? -1 : ((x >= 1) ? 1 : x);
+        y = (y <= -1) ? -1 : ((y >= 1) ? 1 : y);
+
+        // Inverse axis to match Scratch one
+        x = -x;
+        y = -y;
+
+        // Map the values to their cartesian coordinates
+        x = 30 * x;
+        y = 37.5 + y * 22.5;
 
         const cmd = {
             [leg]: {
