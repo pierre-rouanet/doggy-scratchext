@@ -1,13 +1,10 @@
 const walkTraj = JSON.parse('{"front_left_leg": {"front": [-101, -96, -91, -86, -81, -78, -76, -75, -74, -73, -72, -71, -69, -68, -65, -63, -60, -57, -55, -52, -48, -45, -42, -38, -35, -32, -29, -26, -23, -20, -17, -14, -11, -7, -3, 0, 3, 5, 5, 5, 3, 3, -1, -9, -22, -43, -64, -80, -95, -102], "back": [42, 38, 33, 30, 24, 21, 19, 17, 19, 20, 22, 24, 28, 31, 35, 40, 44, 48, 52, 55, 59, 62, 65, 68, 70, 73, 75, 77, 79, 81, 83, 84, 85, 87, 87, 89, 90, 93, 99, 105, 113, 120, 125, 128, 129, 122, 107, 88, 61, 44]}, "front_right_leg": {"front": [-66, -70, -72, -75, -78, -79, -81, -83, -84, -86, -86, -88, -89, -91, -95, -101, -110, -118, -125, -128, -129, -129, -117, -97, -75, -53, -43, -37, -32, -28, -23, -20, -18, -18, -19, -20, -22, -24, -27, -29, -32, -36, -39, -43, -46, -50, -54, -57, -61, -64], "back": [40, 36, 33, 29, 26, 23, 20, 18, 15, 12, 10, 6, 3, -1, -3, -3, -2, 0, 1, 5, 17, 32, 54, 75, 88, 98, 100, 97, 93, 87, 82, 78, 75, 74, 73, 73, 72, 71, 69, 67, 66, 64, 62, 59, 57, 54, 52, 49, 45, 42]}, "back_left_leg": {"front": [-75, -74, -73, -72, -70, -69, -67, -66, -63, -61, -59, -55, -52, -48, -44, -40, -36, -32, -28, -24, -20, -17, -13, -9, -6, -2, 0, 1, 0, -3, -5, -6, -12, -27, -47, -67, -84, -92, -96, -94, -88, -83, -79, -77, -76, -76, -77, -76, -76, -76], "back": [23, 26, 30, 34, 37, 40, 43, 45, 49, 52, 55, 59, 62, 66, 69, 72, 74, 77, 79, 80, 81, 82, 83, 84, 84, 85, 87, 92, 98, 105, 113, 118, 122, 118, 109, 91, 68, 49, 33, 25, 19, 13, 10, 8, 9, 11, 12, 15, 18, 20]}, "back_right_leg": {"front": [-83, -86, -90, -95, -104, -111, -118, -123, -122, -119, -107, -84, -60, -38, -25, -18, -12, -8, -6, -7, -8, -10, -13, -16, -19, -22, -25, -29, -33, -37, -41, -45, -49, -54, -58, -62, -65, -68, -71, -73, -76, -78, -79, -81, -82, -83, -83, -83, -84, -84], "back": [1, -2, -3, -3, -1, 3, 6, 10, 19, 32, 52, 72, 86, 95, 95, 90, 84, 79, 77, 77, 77, 77, 77, 77, 76, 75, 75, 73, 72, 71, 68, 66, 64, 60, 57, 54, 50, 47, 43, 40, 36, 32, 28, 24, 21, 17, 13, 10, 6, 3]}}');
-const loopLength = walkTraj.front_left_leg.front.length;
 const walkSpeeds = {
     // Period (in ms) between each sample of the trajectory
     "slow": 50,
     "normal": 20,
     "fast": 10
 };
-// Index in the trajectory
-let walkIndex = 0;
 
 
 (function (ext) {
@@ -20,7 +17,13 @@ let walkIndex = 0;
     let heartbeatTimestamp = null;
     const heartbeatTimeout = 1000; // in ms
 
-    let walkId = null;
+    let walk = {
+        direction: null,
+        period: walkSpeeds["normal"],
+        index: 0,
+        active: false,
+        loopLength: walkTraj.front_left_leg.front.length
+    };
 
     const startSocket = function(url) {
       if (ws) {
@@ -139,43 +142,47 @@ let walkIndex = 0;
     };
 
     ext.walk = function(direction, speed) {
-        if (walkId != null) {
-            window.clearInterval(walkId);
-            walkId = null;
-        }
+        walk.direction = direction;
+        walk.period = walkSpeeds[speed];
 
-        const period = walkSpeeds[speed];
+        if (!walk.active) {
+            walk.active = true;
 
-        walkId = window.setInterval(function() {
-            cmd = {};
-            for (legName in walkTraj) {
-                const leg = walkTraj[legName];
+            function _walk() {
+                cmd = {};
+                for (legName in walkTraj) {
+                    const leg = walkTraj[legName];
 
-                cmd[legName] = {
-                    front: {
-                        target_position: leg['front'][walkIndex]
-                    },
-                    back: {
-                        target_position: leg['back'][walkIndex]
+                    cmd[legName] = {
+                        front: {
+                            target_position: leg['front'][walk.index]
+                        },
+                        back: {
+                            target_position: leg['back'][walk.index]
+                        }
+                    };
+                }
+                ext.send(cmd);
+
+                if (walk.direction == "forward") {
+                    walk.index += 1;
+                    if (walk.index >= walk.loopLength) {
+                        walk.index -= walk.loopLength;
                     }
-                };
-            }
-            ext.send(cmd);
+                }
+                else if (walk.direction == "backward") {
+                    walk.index -= 1;
+                    if (walk.index <= 0) {
+                        walk.index += walk.loopLength;
+                    }
+                }
 
-            if (direction == "forward") {
-                walkIndex += 1;
-                if (walkIndex >= loopLength) {
-                    walkIndex -= loopLength;
+                if (walk.active) {
+                    setTimeout(_walk, walk.period);
                 }
             }
-            else if (direction == "backward") {
-                walkIndex -= 1;
-                if (walkIndex <= 0) {
-                    walkIndex += loopLength;
-                }
-            }
-
-        }, period);
+            _walk();
+        }
     }
 
     ext.turn = function(angle) {
@@ -186,9 +193,7 @@ let walkIndex = 0;
     ext.stopAllMotors = function() {
         console.log('Should stop all motions!');
 
-        if (walkId != null) {
-            window.clearInterval(walkId);
-        }
+        walk.active = false;
     }
 
     // Reporters
