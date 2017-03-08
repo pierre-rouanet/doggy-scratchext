@@ -1,2 +1,3 @@
-# doggy-scratchext
-Scratch Extension for Doggy
+# meed-scratchext
+
+Scratch Extension for the Meed robot.

@@ -8,7 +8,7 @@ const walkSpeeds = {
 
 
 (function (ext) {
-    let wsHost = 'minidoggy.local';
+    let wsHost = 'meed.local';
     const wsPort = 9009;
 
     let ws = null;
@@ -262,7 +262,7 @@ const walkSpeeds = {
             // Block type, block name, function name
 
             // Motion commands
-            [' ', 'move %m.legs to x: %n y: %n', 'moveLeg', 'front_left', 0, 0],
+            [' ', 'move %m.legs leg to x: %n y: %n', 'moveLeg', 'front_left', 0, 0],
             [' ', 'walk %n cm in %n sec', 'moveForward', 10, 1],
             [' ', 'walk %m.dir at %m.speed speed', 'walk', 'forward', 'normal'],
             [' ', 'turn %n degrees', 'turn', 90],
@@ -274,7 +274,7 @@ const walkSpeeds = {
             ['r', 'distance to %m.distanceSensors', 'getDistance', 'front'],
 
             // Hat
-            ['h', 'when doggy falls', 'whenFall'],
+            ['h', 'when meed falls', 'whenFall'],
             ['h', 'when tilt %m.lessMore %n', 'whenTilt', '<', 0],
             ['h', 'when %m.distanceSensors distance %m.lessMore %n', 'whenObstacle', 'front', '<', 0.75],
 
@@ -302,5 +302,5 @@ const walkSpeeds = {
     };
 
     // Register the extension
-    ScratchExtensions.register('Doggy', descriptor, ext);
+    ScratchExtensions.register('Meed', descriptor, ext);
 })({});
