@@ -101,8 +101,8 @@ const walkSpeeds = {
         // The params x, y are exepected to be in the range [-1, 1]
         // They are mapped to the cartesian coordinates
         // of the end effector of the leg (in mm)
-        // x € [15, 60]
-        // y € [-30, 30]
+        // x € [-30, 30]
+        // y € [15, 60]
 
         leg = leg + '_leg';
 
