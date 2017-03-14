@@ -265,7 +265,7 @@ const walkSpeeds = {
             [' ', 'move %m.legs leg to x: %n y: %n', 'moveLeg', 'front_left', 0, 0],
             [' ', 'walk %n cm in %n sec', 'moveForward', 10, 1],
             [' ', 'walk %m.dir at %m.speed speed', 'walk', 'forward', 'normal'],
-            [' ', 'turn %n degrees', 'turn', 90],
+            [' ', 'turn %m.leftOrRight', 'turn', 'left'],
             [' ', 'stop motors', 'stopAllMotors'],
 
             // Reporters
@@ -292,6 +292,7 @@ const walkSpeeds = {
 
             dir: ['forward', 'backward'],
             speed: ['slow', 'normal', 'fast'],
+            leftOrRight: ['left', 'right'],
 
             acc: ['x', 'y', 'z'],
             distanceSensors: ['front', 'left', 'right'],
