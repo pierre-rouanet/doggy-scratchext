@@ -188,46 +188,8 @@ let ext = function() {
         console.log('Should stop all motions!')
     }
 
-    // Reporters
-
-    ext.felt = function() {
-        return robotState.imu.acc.x > 0.95
-    }
-
-    ext.getImuAcc = function(axis) {
-        return robotState.imu.acc.axis
-    }
-
-    ext.getDistance = function(loc) {
-        return robotState.distance[loc]
-    }
-
-    // Hat
-
-    ext.whenFall = function() {
-        return ext.felt()
-    }
-
-    ext.whenTilt = function(lessMore, tilt) {
-        const angle = ext.getImuAcc('y')
-
-        if (lessMore == '<') {
-            return angle < tilt
-        }
-        else {
-            return angle > tilt
-        }
-    }
-
-    ext.whenObstacle = function(loc, lessMore, dist) {
-        const d = ext.getDistance(loc)
-
-        if (lessMore == '<') {
-            return d < dist
-        }
-        else {
-            return d > dist
-        }
+    ext.getDistance = function() {
+        return robotState.sensor_val
     }
 
     // Debug
@@ -262,15 +224,12 @@ let ext = function() {
             // Motion commands
             [' ', 'move %m.legs leg to x: %n y: %n', 'moveLeg', 'front_left', 0, 0],
 
-            // Reporters
-            ['b', 'felt', 'felt'],
-            ['r', 'imu acc %m.acc', 'getImuAcc', 'x'],
-            ['r', 'distance to %m.distanceSensors', 'getDistance', 'front'],
+            // Distance sensing
+            ['h', 'when %m.distanceSensors distance %m.lessMore %n cm', 'checkDistance', 'front', '<', 10],
+            ['r', '%m.distanceSensors distance', 'getDistance', 'front'],
 
-            // Hat
-            ['h', 'when meed falls', 'whenFall'],
-            ['h', 'when tilt %m.lessMore %n', 'whenTilt', '<', 0],
-            ['h', 'when %m.distanceSensors distance %m.lessMore %n', 'whenObstacle', 'front', '<', 0.75],
+            // LEDs
+            [' ', 'change led color to %m.color', 'setColor', 'green'],
 
             // Debug
             ['---'],
