@@ -28,6 +28,12 @@ let ext = function() {
 
       ws = new WebSocket(url)
 
+      ws.onopen = function() {
+          ext.send({
+              refresh_ms: 30
+          })
+      }
+
       ws.onmessage = function(e) {
         if (typeof e.data == 'string') {
             try {
