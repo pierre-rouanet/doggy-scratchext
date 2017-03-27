@@ -9,6 +9,118 @@ const walkSpeeds = {
     fast: 10,
 }
 
+const en = {
+    status: {
+        notConnected: 'Not connected',
+        connecting: 'Connecting',
+        disconnecting: 'Disconnecting',
+        lostConnection: 'Lost connection...',
+        ready: 'Ready'
+    },
+    block: {
+        walk: 'walk %n steps %m.dir',
+        turn: 'turn %m.leftOrRight',
+        moveLeg: 'move %m.legs leg to x: %n y: %n',
+        setMotorPos: 'set %m.motors motor of the %m.legs leg to position %n',
+        getDistance: '%m.distanceSensors distance',
+        setColor: 'change led color to %m.color'
+    },
+    menus: {
+        color: {
+            red: 'red',
+            green: 'green',
+            blue: 'blue',
+            yellow: 'yellow'
+        },
+        legs: {
+            frontLeft: 'front left',
+            frontRight: 'front right',
+            backLeft: 'back left',
+            backRight: 'back right'
+        },
+        motors: {
+            front: 'front',
+            back: 'back'
+        },
+        dir: {
+            forward: 'forward',
+            backward: 'backward'
+        },
+        leftOrRight: {
+            left: 'left',
+            right: 'right'
+        },
+        distanceSensors: {
+            front: 'front',
+            left: 'left',
+            right: 'right'
+        }
+    }
+}
+
+const fr = {
+    status: {
+        notConnected: 'Pas connecté',
+        connecting: 'Connexion',
+        disconnecting: 'Déconnexion',
+        lostConnection: 'Connexion perdue...',
+        ready: 'Prêt'
+    },
+    block: {
+        walk: 'marcher %n pas vers %m.dir',
+        turn: 'tourner %m.leftOrRight',
+        moveLeg: 'bouger la jambe %m.legs en x: %n y: %n',
+        setMotorPos: 'mettre le moteur %m.motors de la jambe %m.legs en position %n',
+        getDistance: 'distance %m.distanceSensors',
+        setColor: 'allumer la led en %m.color'
+    },
+    menus: {
+        color: {
+            red: 'rouge',
+            green: 'vert',
+            blue: 'bleu',
+            yellow: 'jaune'
+        },
+        legs: {
+            frontLeft: 'avant gauche',
+            frontRight: 'avant droite',
+            backLeft: 'arrière gauche',
+            backRight: 'arrière droite'
+        },
+        motors: {
+            front: 'avant',
+            back: 'arrière'
+        },
+        dir: {
+            forward: "l'avant",
+            backward: "l'arrière"
+        },
+        leftOrRight: {
+            left: 'à gauche',
+            right: 'à droite'
+        },
+        distanceSensors: {
+            front: 'avant',
+            left: 'gauche',
+            right: 'droit'
+        }
+    }
+}
+
+const lang = fr
+
+const toMenusToken = {
+    [lang.menus.legs.frontLeft]: 'front_left_leg',
+    [lang.menus.legs.frontRight]: 'front_right_leg',
+    [lang.menus.legs.backLeft]: 'back_left_leg',
+    [lang.menus.legs.backRight]: 'back_right_leg',
+    [lang.menus.dir.forward]: 'forward',
+    [lang.menus.dir.backward]: 'backward',
+    [lang.menus.motors.front]: 'front',
+    [lang.menus.motors.back]: 'back'
+}
+
+
 
 let ext = function() {
     let wsHost = 'meed.local'
@@ -79,19 +191,19 @@ let ext = function() {
 
             console.log('Connecting to ' + url)
 
-            return { status: 0, msg: 'Not connected' }
+            return { status: 0, msg: lang.status.notConnected }
 
         } else if (ws.readyState === ws.CONNECTING) {
-            return { status: 1, msg: 'Connecting' }
+            return { status: 1, msg: lang.status.connecting }
 
         } else if (ws.readyState === ws.CLOSING) {
-            return { status: 1, msg: 'Disconnecting' }
+            return { status: 1, msg: lang.status.disconnecting }
 
         } else if (!alive) {
-            return { status: 1, msg: 'Lost connection...' }
+            return { status: 1, msg: lang.status.lostConnection }
 
         } else if (ws.readyState === ws.OPEN) {
-            return { status: 2, msg: 'Ready' }
+            return { status: 2, msg: lang.status.ready }
 
         }
     }
@@ -105,7 +217,7 @@ let ext = function() {
         // x € [-30, 30]
         // y € [15, 60]
 
-        leg = leg + '_leg'
+        leg = toMenusToken[leg]
 
         // Make sure x, y belong to [-1, 1]
         x = (x <= -1) ? -1 : ((x >= 1) ? 1 : x)
@@ -129,7 +241,8 @@ let ext = function() {
     }
 
     ext.setMotorPos = function(motor, leg, position) {
-        leg = leg + '_leg'
+        leg = toMenusToken[leg]
+        motor = toMenusToken[motor]
 
         const cmd = {
             [leg]: {
@@ -143,6 +256,8 @@ let ext = function() {
     }
 
     ext.walk = function(steps, direction, callback) {
+        direction = toMenusToken[direction]
+
         let i = 0
 
         let _walk = () => {
@@ -216,41 +331,45 @@ let ext = function() {
             // Block type, block name, function name
 
             // Walk
-            ['w', 'marcher %n pas vers %m.dir', 'walk', 1, "l\'avant"],
-            ['w', 'turn %m.leftOrRight', 'turn', 'left'],
-            ['w', 'turn @turnLeft %n degrees', 'turn', 90],
+            ['w', lang.block.walk, 'walk', 1, lang.menus.dir.forward],
+            ['w', lang.block.turn, 'turn', lang.menus.leftOrRight.left],
             ['--'],
 
             // Motion commands
-            [' ', 'move %m.legs leg to x: %n y: %n', 'moveLeg', 'front_left', 0, 0],
+            [' ', lang.block.moveLeg, 'moveLeg', lang.menus.legs.frontLeft, 0, 0],
 
             // Distance sensing
-            ['h', 'when %m.distanceSensors distance %m.lessMore %n cm', 'checkDistance', 'front', '<', 10],
-            ['r', '%m.distanceSensors distance', 'getDistance', 'front'],
+            // ['h', 'when %m.distanceSensors distance %m.lessMore %n cm', 'checkDistance', 'front', '<', 10],
+            ['r', lang.block.getDistance, 'getDistance', lang.menus.distanceSensors.front],
 
             // LEDs
-            [' ', 'change led color to %m.color', 'setColor', 'green'],
+            [' ', lang.block.setColor, 'setColor', lang.menus.color.green],
 
             // Debug
             ['---'],
-            [' ', 'set %m.motors motor of the %m.legs  leg to position %n', 'setMotorPos', 'front', 'front_left', 0],
+            [' ', lang.block.setMotorPos, 'setMotorPos', lang.menus.motors.front, lang.menus.legs.frontLeft, 0],
             [' ', 'log current state', 'debugLog'],
             [' ', 'connect to host %s', 'connectToHost'],
 
         ],
         menus: {
-            legs: ['front_left', 'front_right',
-                   'back_left', 'back_right'],
-            motors: ['front', 'back'],
-
-            dir: ['forward', 'backward'],
-            speed: ['slow', 'normal', 'fast'],
-            leftOrRight: ['left', 'right'],
-
-            acc: ['x', 'y', 'z'],
-            distanceSensors: ['front', 'left', 'right'],
-
-            lessMore: ['<', '>'],
+            legs: [lang.menus.legs.frontLeft,
+                   lang.menus.legs.frontRight,
+                   lang.menus.legs.backLeft,
+                   lang.menus.legs.backRight],
+            motors: [lang.menus.motors.front,
+                     lang.menus.motors.back],
+            dir: [lang.menus.dir.forward,
+                  lang.menus.dir.backward],
+            leftOrRight: [lang.menus.leftOrRight.left,
+                          lang.menus.leftOrRight.right],
+            distanceSensors: [lang.menus.distanceSensors.front,
+                              lang.menus.distanceSensors.left,
+                              lang.menus.distanceSensors.right],
+            color: [lang.menus.color.red,
+                    lang.menus.color.blue,
+                    lang.menus.color.green,
+                    lang.menus.color.yellow]
         },
         url: '',
     }
