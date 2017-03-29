@@ -13,7 +13,7 @@ module.exports = {
     'comma-dangle': ['error', 'only-multiline'],
     indent: ['error', 2],
     'linebreak-style': ['error', 'unix'],
-    quotes: ['error', 'single'],
+    quotes: ['error', 'single', { "avoidEscape": true }],
     semi: ['error', 'never'],
     'no-unused-vars': ['warn'],
     'no-console': 0,

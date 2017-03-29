@@ -6,7 +6,7 @@ export default function createMeed() {
   const possibleStatus = {
     CONNECTED: 1,
     CONNECTING: 2,
-    NOT_CONNECTED: 4
+    NOT_CONNECTED: 3
   }
 
   let ws = null
@@ -56,10 +56,10 @@ export default function createMeed() {
 
           cmd[legName] = {
             front: {
-              target_position: leg['front'][j]
+              target_position: leg.front[j]
             },
             back: {
-              target_position: leg['back'][j]
+              target_position: leg.back[j]
             }
           }
         }
@@ -83,9 +83,17 @@ export default function createMeed() {
 
   let turn = (steps, direction) => {
     return new Promise((resolve, _reject) => {
+      // TODO:
       console.log('Should turn', steps, 'steps to the', direction)
       setTimeout(resolve, steps * 1000)
     })
+  }
+
+  // LEDs
+
+  let setLedColor = (color) => {
+    // TODO:
+    console.log('Should change led color to', color)
   }
 
   // WS IO
@@ -161,6 +169,8 @@ export default function createMeed() {
 
       walk,
       turn,
+
+      setLedColor,
 
       connect,
       disconnect,

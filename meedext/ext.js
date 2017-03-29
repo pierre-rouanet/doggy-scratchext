@@ -2,6 +2,9 @@
 
 import createMeed from './meed'
 
+import getLangKey from './lang/common.js'
+import lang from './lang/fr.js'
+
 
 let ext = function() {
   let host = '127.0.0.1'
@@ -20,22 +23,23 @@ let ext = function() {
   ext._getStatus = function() {
     if (meed.status == meed.CONNECTED) {
       if (meed.recentlyUpdated) {
-        return { status: 2, msg: 'Ready' }
+        return { status: 2, msg: lang.status.ready }
       } else {
-        // Forcing a disconnect should then trigger
-        // a reconnect when the status switch to NOT_CONNECTED
+        // Forcing a disconnect should then trigger a
+        // re-connection when the status is switched
+        // to NOT_CONNECTED
         meed.disconnect()
 
-        return { status: 1, msg: 'Connection lost, attempt to re-connect' }
+        return { status: 1, msg: lang.status.lostConnection }
       }
 
     } else if (meed.status == meed.CONNECTING) {
-      return { status: 1, msg: 'Connecting...' }
+      return { status: 1, msg: lang.status.connecting }
 
     } else if (meed.status == meed.NOT_CONNECTED){
       meed.connect(host, port)
 
-      return { status: 0, msg: 'Not connected' }
+      return { status: 0, msg: lang.status.notConnected }
     }
   }
 
@@ -60,32 +64,45 @@ let ext = function() {
     x = 30 * x
     y = 37.5 + y * 22.5
 
-    // TODO: convert from 'front left' to 'front_left_leg'
-
+    leg = getLangKey(lang.leg, leg) + '_leg'
     meed.moveLeg(leg, x, y)
   }
 
   ext.walk = (steps, direction, callback) => {
+    direction = getLangKey(lang.direction, direction)
     meed.walk(steps, direction).then(callback)
   }
 
-  ext.turn = (steps, direction, callback) => {
-    meed.turn(steps, direction).then(callback)
+  ext.turn = (steps, side, callback) => {
+    side = getLangKey(lang.side, side)
+    meed.turn(steps, side).then(callback)
+  }
+
+  // LEDs
+
+  ext.setColor = (color) => {
+    color = getLangKey(lang.color, color)
+    meed.setLedColor(color)
   }
 
   // Sensor
 
-  ext.getDistance = (sensor) => meed.state.distance[sensor]
+  ext.getDist = (sensor) => meed.state.distance[getLangKey(lang.distance, sensor)]
 
   // Debug block
 
-  ext.setMotorPosition = (leg, motor, position) => {
-    // Transform leg, motor
+  ext.setMotorPos = (motor, leg, position) => {
+    motor = getLangKey(lang.motor, motor)
+    leg = getLangKey(lang.leg, leg) + '_leg'
+
     meed.setMotorPosition(leg, motor, position)
   }
 
   ext.connectToHost = (_host) => {
     host = _host
+
+    // Forcing the disconnection will automatically
+    // triggers an attempt to re-connect to the new host
     meed.disconnect()
   }
 
@@ -96,33 +113,33 @@ let ext = function() {
   let descriptor = {
     blocks: [
       // Walk
-      ['w', 'walk %n steps %m.dir', 'walk', 1, 'forward' ],
-      ['w', 'turn %n steps %m.side', 'turn', 1, 'left'],
+      ['w', lang.block.walk, 'walk', 1, lang.direction.forward ],
+      ['w', lang.block.turn, 'turn', 1, lang.side.left],
       ['-'],
 
       // Motion
-      [' ', 'move %m.leg to x: %n y: %n', 'moveLeg', 'front left', 0, 0],
+      [' ', lang.block.leg, 'moveLeg', lang.leg.front_left, 0, 0],
       ['-'],
 
       // LED
-      [' ', 'change led color to %m.color', 'setColor', 'red'],
+      [' ', lang.block.ledColor, 'setColor', lang.color.red],
 
       // Sensing
-      ['r', '%m.distance distance', 'getDistance', 'front'],
+      ['r', lang.block.distance, 'getDist', lang.distance.front],
 
       // Debug
       ['--'],
-      [' ', 'set %m.motor motor of the %m.leg leg to position %n', 'setMotorPos', 'front', 'front left', 0],
-      [' ', 'connect to %s', 'connectToHost'],
-      [' ', 'robot state', 'getState'],
+      [' ', lang.block.setMotor, 'setMotorPos', lang.motor.front, lang.leg.front_left, 0],
+      [' ', lang.block.connect, 'connectToHost'],
+      [' ', lang.block.state, 'getState'],
     ],
     menus: {
-      dir: ['forward', 'backward'],
-      side: ['left', 'right'],
-      leg: ['front left', 'front right', 'back left', 'back right'],
-      color: ['red', 'blue', 'green'],
-      distance: ['left', 'front', 'right'],
-      motor: ['front', 'back'],
+      dir: Object.values(lang.direction),
+      side: Object.values(lang.side),
+      leg: Object.values(lang.leg),
+      color: Object.values(lang.color),
+      distance: Object.values(lang.distance),
+      motor: Object.values(lang.motor),
     },
     url: '',
   }

@@ -1,4 +1,3 @@
 {
-  "presets": ["env", "modern-browsers"],
-  "plugins": ["transform-es2015-arrow-functions"]
+  "presets": ["env"]
 }
