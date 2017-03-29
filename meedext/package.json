@@ -1,0 +1,21 @@
+{
+  "name": "meedext",
+  "version": "1.0.0",
+  "description": "Scratch extension for the Meed robot",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack",
+    "lint:js": "eslint *.js webpack.*.js --cache"
+  },
+  "keywords": [],
+  "author": "Pollen Robotics",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-core": "^6.24.0",
+    "babel-loader": "^6.4.1",
+    "babel-preset-es2015": "^6.24.0",
+    "eslint": "^3.18.0",
+    "eslint-loader": "^1.7.0",
+    "webpack": "^2.3.2"
+  }
+}
