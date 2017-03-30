@@ -85,7 +85,6 @@ let ext = function() {
     color = getLangKey(lang.color, color)
     meed.setLedColor(led, color)
   }
-  }
 
   // Sensor
 
