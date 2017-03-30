@@ -91,9 +91,22 @@ export default function createMeed() {
 
   // LEDs
 
-  let setLedColor = (color) => {
-    // TODO:
-    console.log('Should change led color to', color)
+  let setLedColor = (led, color) => {
+    const colorTable = {
+      black: {r: 0, g: 0, b: 0},
+      red: {r: 255, g: 0, b: 0},
+      blue: {r: 0, g: 0, b: 255},
+      green: {r: 0, g: 255, b: 0},
+      yellow: {r: 255, g: 255, b: 0},
+      purple: {r: 255, g: 0, b: 255},
+      cyan: {r: 0, g: 255, b: 255},
+      white: {r: 255, g: 255, b: 255}      
+    }
+
+    const cmd = {
+      [led]: colorTable[color]
+    }
+    send(cmd)
   }
 
   // WS IO

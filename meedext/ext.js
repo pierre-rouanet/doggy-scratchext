@@ -80,9 +80,11 @@ let ext = function() {
 
   // LEDs
 
-  ext.setColor = (color) => {
+  ext.setColor = (led, color) => {
+    led = getLangKey(lang.led, led)
     color = getLangKey(lang.color, color)
-    meed.setLedColor(color)
+    meed.setLedColor(led, color)
+  }
   }
 
   // Sensor
@@ -122,7 +124,7 @@ let ext = function() {
       ['-'],
 
       // LED
-      [' ', lang.block.ledColor, 'setColor', lang.color.red],
+      [' ', lang.block.ledColor, 'setColor', lang.led.led_0, lang.color.red],
 
       // Sensing
       ['r', lang.block.distance, 'getDist', lang.distance.front],
@@ -140,6 +142,7 @@ let ext = function() {
       color: Object.values(lang.color),
       distance: Object.values(lang.distance),
       motor: Object.values(lang.motor),
+      led: Object.values(lang.led),
     },
     url: '',
   }

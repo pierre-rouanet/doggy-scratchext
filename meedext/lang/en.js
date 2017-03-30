@@ -6,9 +6,14 @@ export default {
     notConnected: 'Not connected'
   },
   color: {
+    black: 'black',
     red: 'red',
     blue: 'blue',
-    green: 'green'
+    green: 'green',
+    yellow: 'yellow',
+    purple: 'purple',
+    cyan: 'cyan',
+    white: 'white'
   },
   motor: {
     front: 'front',
@@ -33,11 +38,17 @@ export default {
     forward: 'forward',
     backward: 'backward'
   },
+  led: {
+    led_0: '1',
+    led_1: '2',
+    led_2: '3',
+    led_3: '4'
+  },
   block: {
     walk: 'walk %n steps %m.dir',
     turn: 'turn %n steps %m.side',
     leg: 'move %m.leg leg to x: %n y: %n',
-    ledColor: 'change led color to %m.color',
+    ledColor: 'change led %m.led color to %m.color',
     distance: '%m.distance distance',
     setMotor: 'set %m.motor motor of the %m.leg leg to position %n',
     connect: 'connect to %s',

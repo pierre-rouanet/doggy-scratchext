@@ -6,9 +6,14 @@ export default {
     notConnected: 'Pas connecté'
   },
   color: {
+    black: 'noir',
     red: 'rouge',
     blue: 'bleu',
-    green: 'vert'
+    green: 'vert',
+    yellow: 'jaune',
+    purple: 'violet',
+    cyan: 'cyan',
+    white: 'blanc'
   },
   motor: {
     front: 'avant',
@@ -33,11 +38,17 @@ export default {
     forward: 'avant',
     backward: 'arrière'
   },
+  led: {
+    led_0: '1',
+    led_1: '2',
+    led_2: '3',
+    led_3: '4'
+  },
   block: {
     walk: "marcher %n pas vers l\' %m.dir",
     turn: 'tourner %n pas à %m.side',
     leg: 'déplacer la jambe %m.leg en x: %n y: %n',
-    ledColor: 'allumer la led en %m.color',
+    ledColor: 'allumer la led %m.led en %m.color',
     distance: 'distance %m.distance',
     setMotor: 'mettre le moteur %m.motor de la jambe %m.leg en position %n',
     connect: 'connecter à %s',
