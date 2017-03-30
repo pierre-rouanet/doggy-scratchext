@@ -20,9 +20,10 @@ export default {
     back: 'arrière'
   },
   distance: {
-    left: 'gauche',
-    front: 'avant',
-    right: 'droit'
+    servo_0: 'gauche',
+    servo_1: 'avant',
+    servo_2: 'droit',
+    servo_3: 'arrière',
   },
   leg: {
     front_left: 'avant gauche',

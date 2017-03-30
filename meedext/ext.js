@@ -126,7 +126,7 @@ let ext = function() {
       [' ', lang.block.ledColor, 'setColor', lang.led.led_0, lang.color.red],
 
       // Sensing
-      ['r', lang.block.distance, 'getDist', lang.distance.front],
+      ['r', lang.block.distance, 'getDist', lang.distance.servo_1],
 
       // Debug
       ['--'],
