@@ -21,23 +21,22 @@ let ext = function() {
   }
 
   ext._getStatus = function() {
-    if (meed.status == meed.CONNECTED) {
-      if (meed.recentlyUpdated) {
-        return { status: 2, msg: lang.status.ready }
-      } else {
-        // Forcing a disconnect should then trigger a
-        // re-connection when the status is switched
-        // to NOT_CONNECTED
-        meed.disconnect()
+    if (meed.status == meed.NOT_CONNECTED) {
+      meed.connect(host, port)
 
-        return { status: 1, msg: lang.status.lostConnection }
-      }
+      return { status: 0, msg: lang.status.notConnected }
 
     } else if (meed.status == meed.CONNECTING) {
       return { status: 1, msg: lang.status.connecting }
 
-    } else if (meed.status == meed.NOT_CONNECTED){
-      meed.connect(host, port)
+    } else if (meed.status == meed.DISCONNECTING) {
+      return { status: 1, msg: lang.status.disconnecting }
+
+    } else if (meed.status == meed.CONNECTED) {
+      return { status: 2, msg: lang.status.ready }
+
+    } else {
+      console.error('Unknown status, something real bad happened!')
 
       return { status: 0, msg: lang.status.notConnected }
     }

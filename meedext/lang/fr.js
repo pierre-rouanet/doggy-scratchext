@@ -1,9 +1,9 @@
 export default {
   status: {
     ready: 'Prêt',
-    lostConnection: 'Connexion perdue... reconnexion',
     connecting: 'Connexion...',
-    notConnected: 'Pas connecté'
+    disconnecting: 'Déconnexion',
+    notConnected: 'Pas connecté',
   },
   color: {
     black: 'noir',

@@ -6,15 +6,12 @@ export default function createMeed() {
   const possibleStatus = {
     CONNECTED: 1,
     CONNECTING: 2,
-    NOT_CONNECTED: 3
+    DISCONNECTING: 3,
+    NOT_CONNECTED: 4,
   }
 
-  let ws = null
   let state = {}
   let status = possibleStatus.NOT_CONNECTED
-
-  let heartbeatTimestamp = null
-  const heartbeatTimeout = 1000 // in ms
 
   // Motion
 
@@ -110,6 +107,13 @@ export default function createMeed() {
   }
 
   // WS IO
+  let ws = null
+
+  let heartbeatId = null
+  const heartbeatTimeout = 1000
+
+  let wsTimeoutId = null
+  const wsTimeout = 500
 
   let connect = (host, port) => {
     if (ws) {
@@ -142,11 +146,22 @@ export default function createMeed() {
       else {
         console.error('Binary data received not handled!')
       }
-      const date = new Date()
-      heartbeatTimestamp = date.getTime()
+
+      // Setup a timer, so if we don't received anything
+      // for a long time, we know we are probably disconnected
+      if (heartbeatId) {
+        clearTimeout(heartbeatId)
+        heartbeatId = null
+      }
+      heartbeatId = setTimeout(meed.disconnect, heartbeatTimeout)
     }
 
     ws.onclose = () => {
+      if (wsTimeoutId) {
+        clearTimeout(wsTimeoutId)
+        wsTimeoutId = null
+      }
+
       ws = null
       status = possibleStatus.NOT_CONNECTED
     }
@@ -155,19 +170,27 @@ export default function createMeed() {
   }
 
   let disconnect = () => {
+    if (ws == null) {
+      console.error('Socket already closed.')
+      return false
+    }
+
     if (ws.readyState === ws.OPEN ||
         ws.readyState === ws.CONNECTING) {
 
+      status = possibleStatus.DISCONNECTING
       ws.close()
+
+      if (wsTimeoutId) {
+        console.error('This should not have happened...')
+      }
+      // We force close the ws if the other side does not respond
+      wsTimeoutId = setTimeout(() => {
+        if (ws != null) {
+          ws.onclose()
+        }
+      }, wsTimeout)
     }
-  }
-
-  let recentlyUpdated = () => {
-    const date = new Date()
-    const t = date.getTime()
-
-    let alive = (t - heartbeatTimestamp) < heartbeatTimeout
-    return alive
   }
 
   let send = (data) => {
@@ -199,9 +222,6 @@ export default function createMeed() {
       },
       status: {
         get: () => status
-      },
-      recentlyUpdated: {
-        get: () => recentlyUpdated()
       }
     }
   )
