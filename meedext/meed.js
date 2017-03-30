@@ -16,25 +16,22 @@ export default function createMeed() {
   // Motion
 
   let setMotorPosition = (leg, motor, position) => {
-    const cmd = {
+    send({
       [leg]: {
         [motor]: {
           target_position: position
         }
       }
-    }
-
-    send(cmd)
+    })
   }
 
   let moveLeg = (leg, x, y) => {
-    const cmd = {
+    send({
       [leg]: {
         x,
         y
       }
-    }
-    send(cmd)
+    })
   }
 
   let walk = (steps, direction) => {
@@ -97,13 +94,12 @@ export default function createMeed() {
       yellow: {r: 255, g: 255, b: 0},
       purple: {r: 255, g: 0, b: 255},
       cyan: {r: 0, g: 255, b: 255},
-      white: {r: 255, g: 255, b: 255}      
+      white: {r: 255, g: 255, b: 255}
     }
 
-    const cmd = {
+    send({
       [led]: colorTable[color]
-    }
-    send(cmd)
+    })
   }
 
   // WS IO
